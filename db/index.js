@@ -6,11 +6,29 @@ const client = new Client({
     database: "juicebox_dev",
 });
 
-client.connect((err) => {
-    if (err) {
-        console.error("connection error");
-    } else {
-        console.log("connected", client.database);
-        client.end();
+async function getAllUsers() {
+    const { rows } = await client.query(`
+    SELECT id, username 
+    FROM users;
+    `);
+    return rows;
+}
+
+async function createUser({ username, password }) {
+    try {
+        const { rows } = await client.query(
+            `
+        INSERT INTO users(username, password)
+        VALUES ($1, $2)
+        ON CONFLICT (username) DO NOTHING
+        RETURNING *;
+        `,
+            [username, password]
+        );
+        return rows;
+    } catch (error) {
+        throw error;
     }
-});
+}
+
+module.exports = { client, getAllUsers, createUser };

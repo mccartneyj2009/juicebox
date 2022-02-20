@@ -237,8 +237,7 @@ async function createPostTag(postId, tagId) {
         await client.query(
             `
         INSERT INTO post_tags("postId", "tagId")
-        VALUES ($1, $2)
-        
+        VALUES ($1, $2);
       `,
             [postId, tagId]
         );
